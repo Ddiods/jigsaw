@@ -10,6 +10,11 @@ class GildedRose
 
     public $sellIn;
 
+    const AGEDBRIE = 'Aged Brie';
+    const BACKSTAGEPASSES = 'Backstage passes to a TAFKAL80ETC concert';
+    const SULFURAS = 'Sulfuras, Hand of Ragnaros';
+    const CONJURED = 'Conjured Mana Cake';
+
     public function __construct($name, $quality, $sellIn)
     {
         $this->name = $name;
@@ -17,57 +22,46 @@ class GildedRose
         $this->sellIn = $sellIn;
     }
 
-    public static function of($name, $quality, $sellIn) {
+    public static function of($name, $quality, $sellIn)
+    {
         return new static($name, $quality, $sellIn);
     }
 
     public function tick()
     {
-        if ($this->name != 'Aged Brie' and $this->name != 'Backstage passes to a TAFKAL80ETC concert') {
-            if ($this->quality > 0) {
-                if ($this->name != 'Sulfuras, Hand of Ragnaros') {
-                    $this->quality = $this->quality - 1;
-                }
-            }
-        } else {
-            if ($this->quality < 50) {
-                $this->quality = $this->quality + 1;
-
-                if ($this->name == 'Backstage passes to a TAFKAL80ETC concert') {
-                    if ($this->sellIn < 11) {
-                        if ($this->quality < 50) {
-                            $this->quality = $this->quality + 1;
-                        }
-                    }
-                    if ($this->sellIn < 6) {
-                        if ($this->quality < 50) {
-                            $this->quality = $this->quality + 1;
-                        }
-                    }
-                }
-            }
+        if ($this->name !== self::SULFURAS) {
+            $this->sellIn -= 1;
         }
 
-        if ($this->name != 'Sulfuras, Hand of Ragnaros') {
-            $this->sellIn = $this->sellIn - 1;
-        }
-
-        if ($this->sellIn < 0) {
-            if ($this->name != 'Aged Brie') {
-                if ($this->name != 'Backstage passes to a TAFKAL80ETC concert') {
-                    if ($this->quality > 0) {
-                        if ($this->name != 'Sulfuras, Hand of Ragnaros') {
-                            $this->quality = $this->quality - 1;
-                        }
-                    }
-                } else {
-                    $this->quality = $this->quality - $this->quality;
-                }
-            } else {
+        switch ($this->name) {
+            case self::AGEDBRIE:
                 if ($this->quality < 50) {
-                    $this->quality = $this->quality + 1;
+                    $this->quality += $this->sellIn < 0 ? 2 : 1;
                 }
-            }
+                break;
+            case self::BACKSTAGEPASSES:
+                if ($this->sellIn < 0) {
+                    $this->quality = 0;
+                } else {
+                    if ($this->quality < 50) {
+                        $this->quality += $this->sellIn < 5 ? 3 : ($this->sellIn < 10 ? 2 : 1);
+                    }
+                }
+                break;
+            case self::CONJURED:
+                if ($this->quality > 0) {
+                    $this->quality -= $this->sellIn < 0 ? 4 : 2;
+                }
+                break;
+            case self::SULFURAS:
+                break;
+            default:
+                if ($this->quality > 0) {
+                    $this->quality -= $this->sellIn < 0 ? (2 < 0 ? 0 : 2) : 1;
+                }
+                break;
         }
+
+        $this->quality = $this->quality > 50 ? 50 : $this->quality;
     }
 }
