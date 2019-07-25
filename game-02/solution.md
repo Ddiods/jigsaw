@@ -1,9 +1,9 @@
-#Proposed Solution to Game 02
+# Proposed Solution to Game 02
 
-##Problem
+## Problem
 WTF Server tends to be very unstable, having latency peaks every now and then that end in response timeouts.
 
-##Solution
+## Solution
 To solve this problem, the following patterns will be used: Api Gateway, Health Check and Circuit Breaker.
 
 #### Api Gateway Pattern
@@ -19,7 +19,7 @@ The following graphic shows in a simple way the architecture to follow.
 
 ![Design](./Game02-1.jpg  "Design")
 
-###Concepts:
+### Concepts:
 **YOLO Server:** Represents the YOLO Server
 
 **WTF Server:** Represents the WTF Server
@@ -36,7 +36,7 @@ The following graphic shows in a simple way the architecture to follow.
 
 **Dotted Blue Arrow:** Represents the response from API Gateway to WTF.
 
-###Explanation
+### Explanation
 1. Yolo makes a request to API Gateway (Flat Green Arrow)
 2. API Gateway generate a check request to WTF Server using a short timeout. (Flat Orange Arrow)
 3. WTF Server tries respond to the request with information about the current state of the server.
@@ -46,7 +46,7 @@ After 10 seconds API Gateway will try to contact WTF again, if the server's heal
 5. WTF will process and response the request (Dotted Blue Arrow)
 6. API Gateway will pass the response to the app (Flat Blue Arrow)
 
-###Why?
+### Why?
 The easiest way to manage connections is through a single point, so you can check if WTF is available before making the actual request saving time.
 
 At some point I considered using Service Registry or Self Registration but if WTF has problems with just staying online, I don't think he can timely report whether it is available or not. 
